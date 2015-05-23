@@ -153,3 +153,6 @@ def filestream(request, filepath):
                 resp.write(chunk)
                 chunk = f.read(limit)
     return resp
+
+from aio.web.page import fragments
+fragments = fragments
