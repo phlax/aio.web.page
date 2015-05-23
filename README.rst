@@ -56,10 +56,15 @@ And save the following into a file named "my_example.py"
 
 	  import aiohttp
 	  import aio.web.server
+	  import aio.web.page
 
-	  @aio.web.server.route('example_page.html')
+	  @aio.web.server.template('example_page.html')
+	  def template_handler(request):
+	      return {"message": "Hello template world"}	  
+	  
+	  @aio.web.server.route
 	  def handler(request, config):
-	      return {"message": "Hello template world"}
+	      return (yield from template_handler(request))
 
 
 And the following into a file named "templates/example_page.html"
@@ -77,3 +82,4 @@ Run with the aio run command
 .. code:: bash
 
 	  aio run -c hello.conf
+
