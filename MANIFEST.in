@@ -1,6 +1,6 @@
 include MANIFEST.in
 include README.rst
-include aio/web/server/aio.conf
-recursive-include aio/web/server *.rst
-recursive-include aio/web/server *.html
+include aio/web/page/aio.conf
+recursive-include aio/web/page *.rst
+recursive-include aio/web/page *.html
 
