@@ -65,6 +65,7 @@ And save the following into a file named "my_example.py"
 And the following into a file named "templates/example_page.html"
 
 .. code:: html
+	  
 	  <html>
 	    <body>
 	      {{ message }}
