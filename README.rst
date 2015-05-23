@@ -1,7 +1,7 @@
 aio.web.page
 ============
 
-Web server for the aio_ asyncio framework
+Web page templates for the aio_ asyncio framework
 
 .. _aio: https://github.com/phlax/aio
 
