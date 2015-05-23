@@ -58,7 +58,7 @@ And save the following into a file named "my_example.py"
 	  import aio.web.server
 	  import aio.web.page
 
-	  @aio.web.server.template('example_page.html')
+	  @aio.web.page.template('example_page.html')
 	  def template_handler(request):
 	      return {"message": "Hello template world"}	  
 	  
