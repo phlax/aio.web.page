@@ -6,10 +6,10 @@ aio.web.page provides templates and fragments for building web pages
 Lets set up a test to run a server and request a web page
 
   >>> from aio.app.runner import runner    
-  >>> from aio.testing import aiofuturetest
+  >>> import aio.testing
   >>> import aiohttp  
 
-  >>> @aiofuturetest(sleep=1)
+  >>> @aio.testing.run_forever(sleep=1)
   ... def run_web_server(config, request_page="http://localhost:7070"):
   ...     yield from runner(['run'], config_string=config)
   ... 
