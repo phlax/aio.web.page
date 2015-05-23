@@ -54,7 +54,6 @@ And save the following into a file named "my_example.py"
 
 .. code:: python
 
-	  import aiohttp
 	  import aio.web.server
 	  import aio.web.page
 
