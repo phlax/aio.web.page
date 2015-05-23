@@ -17,6 +17,7 @@ Lets set up a test to run a server and request a web page
   ...         result = yield from (
   ...             yield from aiohttp.request(
   ...                "GET", request_page)).read()
+  ...         aio.web.server.clear()
   ... 
   ...         print(result.decode())
   ... 
@@ -30,6 +31,7 @@ An @aio.web.server.route handler can defer to other templates, for example accor
 
   >>> example_config = """
   ... [aio]
+  ... log_level = ERROR
   ... modules = aio.web.server
   ...        aio.web.server.tests  
   ... 
@@ -90,8 +92,6 @@ Calling the server at /path1 we get the templated handler
     </body>
   </html>
 
-  >>> aio.web.server.clear()
-
 And calling on /path2 we get the response from the handler without a template
   
   >>> run_web_server(
@@ -99,8 +99,6 @@ And calling on /path2 we get the response from the handler without a template
   ...     request_page="http://localhost:7070/path2")  
   Hello, world from template handler 2
     
-  >>> aio.web.server.clear()
-
 
 Fragments
 ---------
