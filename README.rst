@@ -47,7 +47,7 @@ Save the following into a file "hello.conf"
 	  
 	  [web/my_server/my_route]
 	  match = /
-	  route = my_example.handler
+	  route = my_example.route_handler
 
 
 And save the following into a file named "my_example.py"
@@ -63,7 +63,7 @@ And save the following into a file named "my_example.py"
 	      return {"message": "Hello template world"}	  
 	  
 	  @aio.web.server.route
-	  def handler(request, config):
+	  def route_handler(request, config):
 	      return (yield from template_handler(request))
 
 
