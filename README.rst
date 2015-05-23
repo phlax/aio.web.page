@@ -54,8 +54,8 @@ And save the following into a file named "my_example.py"
 
 .. code:: python
 
+	  import aio.web.page	  
 	  import aio.web.server
-	  import aio.web.page
 
 	  @aio.web.page.template('example_page.html')
 	  def template_handler(request):
