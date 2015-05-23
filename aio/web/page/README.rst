@@ -30,7 +30,6 @@ An @aio.web.server.route handler can defer to other templates, for example accor
 
   >>> example_config = """
   ... [aio]
-  ... log_level: ERROR
   ... modules = aio.web.server
   ...        aio.web.server.tests  
   ... 
@@ -106,30 +105,16 @@ And calling on /path2 we get the response from the handler without a template
 Fragments
 ---------
 
-Both routes and templates are expected to return a full html page, or an html response object.
+Fragments render a snippet of html for embedding in other templates.
 
-Fragments render a snippet of code, and are not expected to return a full page.
-
-  >>> example_config = """
-  ... [aio]
-  ... modules = aio.web.server
-  ...        aio.web.server.tests  
-  ... 
-  ... [server/server_name]
-  ... factory: aio.web.server.factory
-  ... port: 7070
-  ... 
-  ... [web/server_name/route_name]
-  ... match = /
-  ... route = aio.web.page.tests._example_route_handler
-  ... """
-
-Fragment handlers should return a dictionary and should not return an html response object.
+Fragments must always specify a template
 
   >>> @aio.web.page.fragment("fragments/test_fragment.html")    
   ... def fragment_handler(request, test_list):  
   ...     return {'test_list': test_list}
 
+And fragment handlers should always return a context dictionary.
+  
 Both templates and fragments can take arbitrary arguments
   
   >>> @aio.web.page.template("test_template.html")  
