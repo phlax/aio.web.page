@@ -1,7 +1,9 @@
-aio.web.server usage
---------------------
+aio.web.page usage
+------------------
 
-Lets set up a test to run the server and request a web page
+aio.web.page provides templates and fragments for building web pages
+
+Lets set up a test to run a server and request a web page
 
   >>> from aio.app.runner import runner    
   >>> from aio.testing import aiofuturetest
@@ -38,7 +40,7 @@ An @aio.web.server.route handler can defer to other templates, for example accor
   ... 
   ... [web/server_name/route_name]
   ... match = /{path:.*}
-  ... route = aio.web.server.tests._example_route_handler
+  ... route = aio.web.page.tests._example_route_handler
   ... """
 
 Lets create a couple of template handlers
@@ -47,14 +49,18 @@ Lets create a couple of template handlers
 
   >>> @aio.web.page.template("test_template.html")    
   ... def template_handler_1(request):  
-  ...     return {'message': "Hello, world from template handler 1"}
+  ...     return {
+  ...         'message': "Hello, world from template handler 1"}
 
-  >>> @aio.web.page.template("test_template.html")  
+Template handlers dont have to specify a template, but they must return a response object if they dont
+  
+  >>> @aio.web.page.template
   ... def template_handler_2(request):
-  ...     return {'message': "Hello, world from template handler 2"}  
+  ...     return aiohttp.web.Response(
+  ...         body=b"Hello, world from template handler 2")
 
 
-And lets set up a aio.web.server.route
+And lets set up a route handler which will defer to a template according to the route
 
   >>> import aio.web.server
 
@@ -66,10 +72,15 @@ And lets set up a aio.web.server.route
   ... 
   ...     elif request.path == "/path2":
   ...         return (yield from template_handler_2(request))
+  ... 
+  ...     raise aiohttp.web.HTTPNotFound
 
-  >>> import aio.web.server.tests
+And make it importable
+  
+  >>> import aio.web.page.tests
+  >>> aio.web.page.tests._example_route_handler = route_handler
 
-  >>> aio.web.server.tests._example_route_handler = route_handler
+Calling the server at /path1 we get the templated handler
   
   >>> run_web_server(
   ...     example_config,
@@ -81,16 +92,14 @@ And lets set up a aio.web.server.route
   </html>
 
   >>> aio.web.server.clear()
+
+And calling on /path2 we get the response from the handler without a template
   
   >>> run_web_server(
   ...     example_config,
   ...     request_page="http://localhost:7070/path2")  
-  <html>
-    <body>
-      Hello, world from template handler 2
-    </body>
-  </html>
-
+  Hello, world from template handler 2
+    
   >>> aio.web.server.clear()
 
 
@@ -101,38 +110,40 @@ Both routes and templates are expected to return a full html page, or an html re
 
 Fragments render a snippet of code, and are not expected to return a full page.
 
-Fragment handlers should return a context or dictionary and should not return an html response object.
-
-Fragments can raise an html error if relevant, and is then up to the template or route to handle the exception.
-
   >>> example_config = """
   ... [aio]
   ... modules = aio.web.server
   ...        aio.web.server.tests  
   ... 
-  ... [server/example-3]
+  ... [server/server_name]
   ... factory: aio.web.server.factory
   ... port: 7070
   ... 
-  ... [web/example-3/paths]
+  ... [web/server_name/route_name]
   ... match = /
-  ... route = aio.web.server.tests._example_route_handler
+  ... route = aio.web.page.tests._example_route_handler
   ... """
+
+Fragment handlers should return a dictionary and should not return an html response object.
 
   >>> @aio.web.page.fragment("fragments/test_fragment.html")    
   ... def fragment_handler(request, test_list):  
   ...     return {'test_list': test_list}
 
+Both templates and fragments can take arbitrary arguments
+  
   >>> @aio.web.page.template("test_template.html")  
   ... def template_handler(request, test_list):
   ...     return {'message': (yield from fragment_handler(request, test_list))}  
 
+Whereas a route always receives (request, config)
+  
   >>> @aio.web.server.route
   ... def route_handler(request, config):
   ... 
   ...     return (yield from template_handler(request, ["foo", "bar", "baz"]))
 
-  >>> aio.web.server.tests._example_route_handler = route_handler
+  >>> aio.web.page.tests._example_route_handler = route_handler
   
   >>> run_web_server(
   ...     example_config,

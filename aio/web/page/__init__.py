@@ -3,14 +3,8 @@ import asyncio
 import functools
 import mimetypes
 
-from zope.dottedname.resolve import resolve
 import aiohttp
 import aiohttp_jinja2
-
-import aio.app
-import aio.http.server
-import aio.web.server
-from aio.core.exceptions import MissingConfiguration
 
 import logging
 log = logging.getLogger("aio.web")
@@ -52,6 +46,10 @@ def template(*la, **kwa):
                 traceback.print_exc()
                 log.error("Error calling template handler: %s" % e)
                 raise e
+
+            if isinstance(context, aiohttp.web.StreamResponse):
+                return context
+
             try:
                 response = aiohttp_jinja2.render_template(
                     template_name, request, context,
