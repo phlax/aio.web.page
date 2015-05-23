@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% block head %}
+
+    {% block css %}
+    {% endblock css %}
+
+    {% block js_head %}
+    {% endblock js_head %}
+    
+    {% endblock head %}
+  </head>
+  <body {% block body_attrs %}id="{% block body_id %}{% endblock body_id %}" class="{% block body_class %}{% endblock body_class %}"{% endblock body_attrs %}>
+    {% block body %}
+    {% block heading %}{{ heading }}{% endblock heading %}        
+    {% block content %}
+    {% endblock content %}        
+    {% endblock body %}    
+  </body>
+  {% block js %}
+  {% endblock js %}
+</html>

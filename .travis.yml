@@ -1,0 +1,12 @@
+language: python
+python:
+ - "3.4"
+
+install:
+ - pip install -r travis/requirements.txt
+ - pip install .
+
+before_script:
+- wget https://raw.githubusercontent.com/phlax/aio.web.page/master/travis/aio.conf
+
+script: aio test aio.web.page
