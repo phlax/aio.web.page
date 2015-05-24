@@ -29,8 +29,6 @@ Install with:
 Quick start - hello world web page
 ----------------------------------
 
-Create a web server that serves a hello world page
-
 Save the following into a file "hello.conf"
 
 .. code:: ini
