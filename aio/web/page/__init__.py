@@ -1,7 +1,5 @@
-import os
 import asyncio
 import functools
-import mimetypes
 
 import aiohttp
 import aiohttp_jinja2
@@ -15,24 +13,33 @@ def template(*la, **kwa):
     """
     calls handler
     - hander can return a response object or context
-    - if context, context is returned
+    - if response object, response is returned
     - else the the template is rendered
     """
     app_key = kwa.get("app_key", aiohttp_jinja2.APP_KEY)
     encoding = kwa.get("encoding", 'utf-8')
     status = kwa.get("status", 200)
 
-    if len(la) == 1 and not callable(la[0]):
+    try:
         template_name = la[0]
-    else:
-        template_name = None
+        assert(isinstance(template_name, str))
+    except (IndexError, AssertionError):
+        raise TypeError(
+            "Template decorator must specify template: %s" % la[0])
 
     def wrapper(func):
 
         @asyncio.coroutine
         @functools.wraps(func)
         def wrapped(*la, **kwa):
-            request = la[0]
+            try:
+                request = la[0]
+                assert(isinstance(
+                    request, aiohttp.web.Request))
+            except (IndexError, AssertionError):
+                raise TypeError(
+                    "Template handler should be called with "
+                    + "a request object, got: %s" % la[0])
 
             if asyncio.iscoroutinefunction(func):
                 coro = func
@@ -72,17 +79,23 @@ def template(*la, **kwa):
 def fragment(*la, **kwa):
     app_key = kwa.get("app_key", aiohttp_jinja2.APP_KEY)
 
-    if len(la) == 1 and not callable(la[0]):
+    template_name = None
+    if isinstance(la[0], str):
         template_name = la[0]
-    else:
-        template_name = None
 
     def wrapper(func):
 
         @asyncio.coroutine
         @functools.wraps(func)
         def wrapped(*la, **kwa):
-            request = la[0]
+            try:
+                request = la[0]
+                assert(isinstance(
+                    request, aiohttp.web.Request))
+            except (IndexError, AssertionError):
+                raise TypeError(
+                    "Fragment handler should be called with "
+                    + "a request object, got: %s" % la[0])
 
             if asyncio.iscoroutinefunction(func):
                 coro = func
@@ -100,12 +113,19 @@ def fragment(*la, **kwa):
             if isinstance(context, str):
                 return context
 
+            if not isinstance(context, dict):
+                error_message = (
+                    "Fragment handler (%s) should return a string " % func
+                    + "or context dictionary")
+                log.error(error_message)
+                raise TypeError(error_message)
+
             if not template_name:
                 error_message = (
-                    "Fragment handler (%s) should provide a template" % func
+                    "Fragment handler (%s) should specify a template" % func
                     + " or return a string")
                 log.error(error_message)
-                raise Exception(error_message)
+                raise TypeError(error_message)
 
             try:
                 response = aiohttp_jinja2.render_string(
