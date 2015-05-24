@@ -60,7 +60,7 @@ setup(
     packages=find_packages(),
     namespace_packages=['aio', "aio.web"],
     include_package_data=True,
-    test_suite="aio.app.tests",
+    test_suite="aio.web.page.tests",
     zip_safe=False,
     tests_require=tests_require,
     install_requires=install_requires,
