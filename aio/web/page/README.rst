@@ -27,7 +27,7 @@ Lets set up a test to run a server and request a web page
 Templates
 ---------
   
-An @aio.web.server.route handler can defer to other templates, for example according to the path.
+An @aio.web.server.route handler can defer to other templates, for example according to the matched path.
 
 >>> example_config = """
 ... [aio]
@@ -61,17 +61,18 @@ Template handlers dont have to specify a template, but they must return a respon
 ...         body=b"Hello, world from template handler 2")
 
 
-And lets set up a route handler which will defer to a template according to the route
+And lets set up a route handler which will defer to a template accordingly
 
 >>> import aio.web.server
 
 >>> @aio.web.server.route
 ... def route_handler(request, config):
+...     path = request.match_info['path']
 ... 
-...     if request.path == "/path1":
+...     if request.path == "path1":
 ...         return (yield from template_handler_1(request))
 ... 
-...     elif request.path == "/path2":
+...     elif request.path == "path2":
 ...         return (yield from template_handler_2(request))
 ... 
 ...     raise aiohttp.web.HTTPNotFound
