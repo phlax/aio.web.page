@@ -69,10 +69,10 @@ And lets set up a route handler which will defer to a template accordingly
 ... def route_handler(request, config):
 ...     path = request.match_info['path']
 ... 
-...     if request.path == "path1":
+...     if path == "path1":
 ...         return (yield from template_handler_1(request))
 ... 
-...     elif request.path == "path2":
+...     elif path == "path2":
 ...         return (yield from template_handler_2(request))
 ... 
 ...     raise aiohttp.web.HTTPNotFound
