@@ -142,11 +142,11 @@ The first argument to a template should always be a request object
 ...     try:
 ...         return (yield from(template_handler("spam", "tuesday")))
 ...     except TypeError as e:
-...         return aiohttp.web.Response(body=str(e).encode())
+...         return aiohttp.web.Response(body=repr(e).encode())
 >>> aio.web.page.tests._example_route_handler = route_handler
 
 >>> run_web_server(example_config)
-Template handler should be called with a request object, got: spam
+TypeError("Template handler (<function template_handler at ...>) should be called with a request object, got: <class 'str'> spam",)
 
 
 Fragments
@@ -202,7 +202,7 @@ The first argument to a fragment should always be an aiohttp.web.Request object
 >>> run_web_server(example_config)
 <html>
   <body>
-    TypeError('Fragment handler should be called with a request object, got: eggs',)
+    TypeError("Fragment handler (<function fragment_handler ...>) should be called with a request object, got: <class 'str'> eggs",)
   </body>
 </html>
 
@@ -277,7 +277,7 @@ Fragments should only return strings or context dictionaries, and should not ret
 >>> run_web_server(example_config)
 <html>
   <body>
-    TypeError('Fragment handler (<function fragment_handler at ...>) should return a string or context dictionary',)
+    TypeError("Fragment handler (<function fragment_handler ...>) should return a string or context dictionary, got: <class 'aiohttp.web_reqrep.Response'> <Response OK not started>",)
   </body>
 </html>
 

@@ -38,8 +38,8 @@ def template(*la, **kwa):
                     request, aiohttp.web.Request))
             except (IndexError, AssertionError):
                 raise TypeError(
-                    "Template handler should be called with "
-                    + "a request object, got: %s" % la[0])
+                    "Template handler (%s) should be called with " % func
+                    + "a request object, got: %s %s" % (type(la[0]), la[0]))
 
             if asyncio.iscoroutinefunction(func):
                 coro = func
@@ -94,8 +94,8 @@ def fragment(*la, **kwa):
                     request, aiohttp.web.Request))
             except (IndexError, AssertionError):
                 raise TypeError(
-                    "Fragment handler should be called with "
-                    + "a request object, got: %s" % la[0])
+                    "Fragment handler (%s) should be called with " % func
+                    + "a request object, got: %s %s" % (type(la[0]), la[0]))
 
             if asyncio.iscoroutinefunction(func):
                 coro = func
@@ -116,7 +116,8 @@ def fragment(*la, **kwa):
             if not isinstance(context, dict):
                 error_message = (
                     "Fragment handler (%s) should return a string " % func
-                    + "or context dictionary")
+                    + "or context dictionary, got: %s %s" % (
+                        type(context), context))
                 log.error(error_message)
                 raise TypeError(error_message)
 
