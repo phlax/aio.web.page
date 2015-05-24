@@ -123,34 +123,5 @@ def fragment(*la, **kwa):
         return wrapper(la[0])
     return wrapper
 
-
-def filestream(request, filepath):
-    resp = aiohttp.web.StreamResponse()
-    limit = aiohttp.web_urldispatcher.StaticRoute.limit
-    ct, encoding = mimetypes.guess_type(
-        os.path.basename(filepath))
-    if not ct:
-        ct = 'application/octet-stream'
-    resp.content_type = ct
-    if encoding:
-        resp.headers['content-encoding'] = encoding
-
-    file_size = os.stat(filepath).st_size
-    single_chunk = file_size < limit
-
-    if single_chunk:
-        resp.content_length = file_size
-    resp.start(request)
-
-    with open(filepath, 'rb') as f:
-        chunk = f.read(limit)
-        if single_chunk:
-            resp.write(chunk)
-        else:
-            while chunk:
-                resp.write(chunk)
-                chunk = f.read(limit)
-    return resp
-
 from aio.web.page import fragments
 fragments = fragments
