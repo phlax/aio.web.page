@@ -282,4 +282,29 @@ Fragments should only return strings or context dictionaries, and should not ret
 </html>
 
 
+Views
+-----
+
+
+>>> @aio.web.page.view("test_template.html", view_class=aio.web.page.FormView)
+... def view_handler(view, foo, bar):
+...     return (yield from view.respond(
+...         {"message": "hello with %s and %s " % (
+...             foo, bar)}))
+
+
+>>> @aio.web.server.route
+... def route_handler(request, config):
+...     return (yield from(view_handler(request, "spam", "eggs")))
+>>> aio.web.page.tests._example_route_handler = route_handler
+
+>>> run_web_server(example_config)
+<html>
+  <body>
+    <ul>
+      <li>eggs</li><li>thursday</li>
+    </ul>
+  </body>
+</html>
+
 
