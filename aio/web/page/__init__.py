@@ -4,6 +4,8 @@ import functools
 import aiohttp
 import aiohttp_jinja2
 
+import aio.http.server
+
 import logging
 log = logging.getLogger("aio.web")
 apps = {}
@@ -149,7 +151,6 @@ from aio.web.page import fragments
 fragments = fragments
 
 
-
 class View(object):
 
     def __init__(self, request, template_name=None,
@@ -162,7 +163,7 @@ class View(object):
         self._status = status
         self._context = context or {}
         self._responder = None
-        
+
     def get_template(self):
         return self._template
 
@@ -208,12 +209,12 @@ class View(object):
     def handle_request(self, request):
         pass
 
-    @asyncio.coroutine    
+    @asyncio.coroutine
     def handle_success(self):
         try:
             response = self.get_responder(
                 *self.get_responder_args(),
-                **self.get_responder_kwargs())    
+                **self.get_responder_kwargs())
             response.set_status(self.get_status())
         except Exception as e:
             return self.handle_error(e)
@@ -226,17 +227,17 @@ class View(object):
         log.error("Error calling view (%s): %s" % (
             self, e))
         raise e
-        
+
     @asyncio.coroutine
     def respond(self, context=None):
         self.update_context(context or {})
         try:
-            yield from self.handle_request(self.request)            
+            yield from self.handle_request(self.request)
             return (yield from self.handle_success())
         except Exception as e:
             return (yield from self.handle_error(e))
 
-    
+
 class FormView(View):
 
     def get_redirect_url(self):
@@ -244,13 +245,13 @@ class FormView(View):
 
     def get_success_template(self):
         return self._success_template
-    
+
     def get_form_class(self):
         return self._form_class
 
     def set_form_class(self, form_class):
         self._form_class = form_class
-    
+
     def get_form(self):
         return self.get_form_class(
             *self.get_form_args(),
@@ -261,7 +262,7 @@ class FormView(View):
 
     def get_form_kwargs(self):
         return {}
-        
+
     @asyncio.coroutine
     def handle_request(self, request):
         if request.post:
@@ -272,7 +273,7 @@ class FormView(View):
             except Exception as e:
                 yield from self.handle_error(e)
 
-    @asyncio.coroutine                
+    @asyncio.coroutine
     def handle_form_success(self):
         if self.get_redirect_url():
             return aio.http.server.redirect(
@@ -283,19 +284,19 @@ class FormView(View):
         try:
             response = self.get_responder(
                 *self.get_responder_args(),
-                **self.get_responder_kwargs())    
+                **self.get_responder_kwargs())
             response.set_status(self.get_status())
         except Exception as e:
             return self.handle_error(e)
         return response
-        
-    @asyncio.coroutine    
+
+    @asyncio.coroutine
     def handle_form_failure(self):
         # set any errors on the context here...
         try:
             response = self.get_responder(
                 *self.get_responder_args(),
-                **self.get_responder_kwargs())    
+                **self.get_responder_kwargs())
             response.set_status(self.get_status())
         except Exception as e:
             return self.handle_error(e)
@@ -307,7 +308,7 @@ class FormView(View):
             return (yield from self.handle_form_failure())
         else:
             return (yield from self.handle_form_success())
-        
+
 
 def view(*la, **kwa):
     """
